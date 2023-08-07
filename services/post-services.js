@@ -187,6 +187,71 @@ const postServices = {
       cb(err)
     }
   },
+  getUserAllPosts: async (req, cb) => {
+    try {
+      const userId = req.user.id
+      const user = await User.findOne({
+        where: { id: userId, isSuspended: false }
+      })
+      if (!user) {
+        const err = new Error('User does not exist!')
+        err.status = 404
+        throw err
+      }
+      const allPosts = await Post.findAll({
+        where: { userId: userId },
+        include: [
+          { model: User, attributes: ['id', 'name', 'avatar'] }
+        ],
+        attributes: [
+          'id',
+          'title',
+          'category',
+          'image',
+          'difficulty',
+          'recommend',
+          'inProgress',
+          'userId',
+          'createdAt',
+          'updatedAt',
+          [
+            sequelize.literal(
+              '(SELECT COUNT(*) FROM Favorites WHERE Favorites.postId = Post.id)'
+            ),
+            'favoriteCount'
+          ],
+          [
+            sequelize.literal(
+              '(SELECT COUNT(*) FROM Likes WHERE Likes.postId = Post.id)'
+            ),
+            'likeCount'
+          ],
+          [
+            sequelize.literal(
+              `(SELECT COUNT(*) FROM Favorites WHERE Favorites.postId = Post.id AND Favorites.userId = ${userId})`
+            ),
+            'isFavorite'
+          ],
+          [
+            sequelize.literal(
+              `(SELECT COUNT(*) FROM Likes WHERE Likes.postId = Post.id AND Likes.userId = ${userId})`
+            ),
+            'isLike'
+          ]
+        ],
+        order: [['createdAt', 'DESC']]
+      })
+      const allPostsData = allPosts.map(post => {
+        const postJson = post.toJSON()
+        postJson.isFavorite = Boolean(postJson.isFavorite)
+        postJson.isLike = Boolean(postJson.isLike)
+        return postJson
+      })
+      cb(null, allPostsData)
+    } catch (err) {
+      cb(err)
+    }
+  },
   postPost: async (req, cb) => {
     try {
       const userId = req.user.id

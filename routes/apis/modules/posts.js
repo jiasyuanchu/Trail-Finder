@@ -11,6 +11,7 @@ router.get('/', optionalAuthenticated, postController.getPosts)
 
 const upload = require('../../../middleware/multer')
 
+router.get('/users/all', postController.getUserAllPosts)
 router.delete('/collects/:postId', postController.deleteCollect)
 router.delete('/likes/:postId', postController.deleteLike)
 router.get('/:postId/cache', postController.getTempPost)
