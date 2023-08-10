@@ -328,7 +328,7 @@ const trailServices = {
         ]
       })
       const gpxData = trail.gpx
-      const fileName = `${trail.title}.gpx`
+      // const fileName = `${trail.title}.gpx`
       const builderOptions = {
         attributeNamePrefix: '@_',
         attrNodeName: 'attr',
@@ -341,21 +341,21 @@ const trailServices = {
       }
       const builder = new XMLBuilder(builderOptions)
       const gpxXml = builder.build(JSON.parse(gpxData))
-      const path = `./temp/${fileName}`
+      // const path = `./temp/${fileName}`
 
-      if (fs.existsSync(path)) {
-        console.log(`File ${path} already exists.`)
-      } else {
-        fs.writeFileSync(path, gpxXml, 'utf-8')
-        console.log(`File ${path} created successfully.`)
-      }
-      const fileContent = fs.readFileSync(path, 'utf-8')
+      // if (fs.existsSync(path)) {
+      //   console.log(`File ${path} already exists.`)
+      // } else {
+      //   fs.writeFileSync(path, gpxXml, 'utf-8')
+      //   console.log(`File ${path} created successfully.`)
+      // }
+      // const fileContent = fs.readFileSync(path, 'utf-8')
       const trailGpxData = {
         id: trail.id,
         title: trail.title,
         createdAt: trail.createdAt,
         updatedAt: trail.updatedAt,
-        gpx: fileContent
+        gpx: gpxXml
       }
       cb(null, trailGpxData)
     } catch (err) {
